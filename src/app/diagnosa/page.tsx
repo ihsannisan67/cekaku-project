@@ -65,6 +65,10 @@ export default function DiagnosaPage() {
     }
   };
 
+  const handleClearAll = () => {
+    setSelectedSymptoms([]);
+  };
+
   const isValid = age > 0 && age <= 120 && selectedSymptoms.length > 0;
 
   return (
@@ -112,6 +116,7 @@ export default function DiagnosaPage() {
           <SymptomSelector
             selectedSymptoms={selectedSymptoms}
             onToggleSymptom={handleToggleSymptom}
+            onClearAll={handleClearAll}
           />
 
           {/* Submit */}
