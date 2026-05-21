@@ -69,7 +69,8 @@ export default function DiagnosaPage() {
     setSelectedSymptoms([]);
   };
 
-  const isValid = age > 0 && age <= 120 && selectedSymptoms.length > 0;
+  const isPatientDataFilled = age > 0 && age <= 120;
+  const isValid = isPatientDataFilled && selectedSymptoms.length > 0;
 
   return (
     <main className="min-h-screen bg-gray-50 py-8">
@@ -89,12 +90,10 @@ export default function DiagnosaPage() {
           </p>
         </div>
 
-        {/* Progress */}
+        {/* Progress - dynamically based on actual state */}
         <ProgressBar
-          currentStep={2}
-          totalSteps={2}
-          selectedSymptoms={selectedSymptoms.length}
-          minSymptoms={1}
+          isPatientDataFilled={isPatientDataFilled}
+          selectedSymptomsCount={selectedSymptoms.length}
         />
 
         {/* Error message */}

@@ -6,7 +6,7 @@ import { Activity, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 // Animated counter component
-function AnimatedCounter({ value, duration = 2 }: { value: number; duration?: number }) {
+function AnimatedCounter({ value, suffix = '', duration = 2 }: { value: number; suffix?: string; duration?: number }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
@@ -20,7 +20,6 @@ function AnimatedCounter({ value, duration = 2 }: { value: number; duration?: nu
     const updateCount = () => {
       const now = Date.now();
       const progress = Math.min((now - startTime) / (duration * 1000), 1);
-      // Ease out cubic
       const easeOut = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(easeOut * value));
 
@@ -32,8 +31,19 @@ function AnimatedCounter({ value, duration = 2 }: { value: number; duration?: nu
     requestAnimationFrame(updateCount);
   }, [isInView, value, duration]);
 
-  return <motion.div ref={ref}>{count}</motion.div>;
+  return (
+    <motion.div ref={ref} className="inline-flex items-baseline">
+      <span className="tabular-nums">{count}</span>
+      {suffix && <span>{suffix}</span>}
+    </motion.div>
+  );
 }
+
+const stats = [
+  { value: 40, suffix: '+', label: 'Penyakit' },
+  { value: 28, suffix: '', label: 'Jenis Gejala' },
+  { value: 100, suffix: '%', label: 'Gratis' },
+];
 
 export function HeroSection() {
   return (
@@ -110,47 +120,29 @@ export function HeroSection() {
           </Link>
         </motion.div>
 
+        {/* Stats Section - Fixed alignment */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-16 grid grid-cols-3 gap-8"
+          className="mt-16 flex justify-center gap-8 md:gap-16"
         >
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
-            className="text-center"
-          >
-            <div className="text-4xl font-bold text-blue-600 md:text-5xl">
-              <AnimatedCounter value={40} />
-              <span className="text-3xl md:text-4xl">+</span>
-            </div>
-            <div className="mt-2 text-sm text-gray-600 md:text-base">Penyakit</div>
-          </motion.div>
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.7, type: 'spring', stiffness: 200 }}
-            className="text-center"
-          >
-            <div className="text-4xl font-bold text-blue-600 md:text-5xl">
-              <AnimatedCounter value={28} />
-            </div>
-            <div className="mt-2 text-sm text-gray-600 md:text-base">Jenis Gejala</div>
-          </motion.div>
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.8, type: 'spring', stiffness: 200 }}
-            className="text-center"
-          >
-            <div className="text-4xl font-bold text-blue-600 md:text-5xl">
-              <AnimatedCounter value={100} />
-              <span className="text-3xl md:text-4xl">%</span>
-            </div>
-            <div className="mt-2 text-sm text-gray-600 md:text-base">Gratis</div>
-          </motion.div>
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.6 + index * 0.1, type: 'spring', stiffness: 200 }}
+              className="flex flex-col items-center"
+            >
+              <div className="flex items-baseline justify-center text-4xl font-bold text-blue-600 md:text-5xl">
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+              </div>
+              <div className="mt-1 text-sm font-medium text-gray-600 md:text-base">
+                {stat.label}
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
