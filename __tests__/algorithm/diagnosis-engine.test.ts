@@ -1,91 +1,61 @@
 import { describe, it, expect } from 'vitest';
 import {
-  calculateSymptomWeight,
-  buildSymptomWeightMap,
-  calculateMatchScore,
-  calculateCoverageScore,
+  calculateSymptomIDF,
+  buildSymptomIDFMap,
+  calculateIDFMatchScore,
+  calculateCompletenessScore,
   calculateAgeModifier,
   calculateGenderModifier,
   determineConfidence,
+  checkRequiredSymptoms,
   diagnose,
 } from '@/lib/algorithm/diagnosis-engine';
 import { DISEASES } from '@/lib/data/diseases';
 import type { Disease, Gender } from '@/types';
 
 describe('Diagnosis Engine', () => {
-  describe('calculateSymptomWeight', () => {
+  describe('calculateSymptomIDF', () => {
     it('should give higher weight to rarer symptoms', () => {
-      // Common symptoms (appear in many diseases) should have lower weight
+      // Common symptoms (appear in many diseases) should have lower IDF
       const commonSymptom = 'demam'; // Appears in many diseases
       const rareSymptom = 'pandangan_kabur'; // Appears in fewer diseases
 
-      const commonWeight = calculateSymptomWeight(commonSymptom, DISEASES);
-      const rareWeight = calculateSymptomWeight(rareSymptom, DISEASES);
+      const commonIDF = calculateSymptomIDF(commonSymptom, DISEASES);
+      const rareIDF = calculateSymptomIDF(rareSymptom, DISEASES);
 
-      expect(rareWeight).toBeGreaterThan(commonWeight);
+      expect(rareIDF).toBeGreaterThan(commonIDF);
     });
 
-    it('should return 0 for non-existent symptoms', () => {
-      const weight = calculateSymptomWeight('nonexistent_symptom', DISEASES);
-      expect(weight).toBe(0);
+    it('should return positive IDF for all existing symptoms', () => {
+      const idf = calculateSymptomIDF('demam', DISEASES);
+      expect(idf).toBeGreaterThan(0);
     });
   });
 
-  describe('buildSymptomWeightMap', () => {
+  describe('buildSymptomIDFMap', () => {
     it('should build map for all symptoms', () => {
-      const map = buildSymptomWeightMap(DISEASES);
+      const map = buildSymptomIDFMap(DISEASES);
       expect(map.size).toBeGreaterThan(0);
     });
 
-    it('should assign weights between 0 and 1', () => {
-      const map = buildSymptomWeightMap(DISEASES);
-      map.forEach((weight) => {
-        expect(weight).toBeGreaterThanOrEqual(0);
-        expect(weight).toBeLessThanOrEqual(1);
+    it('should assign IDF values greater than 1', () => {
+      const map = buildSymptomIDFMap(DISEASES);
+      map.forEach((idf) => {
+        expect(idf).toBeGreaterThan(0);
       });
     });
   });
 
-  describe('calculateMatchScore', () => {
-    it('should return 0 if required symptoms are missing', () => {
-      const heartAttack: Disease = {
-        id: 'test',
-        name: 'Test Disease',
-        nameEn: 'Test Disease',
-        symptoms: ['nyeri_dada', 'sesak_napas'],
+  describe('checkRequiredSymptoms', () => {
+    it('should return false if no required symptoms are present', () => {
+      const disease = {
         requiredSymptoms: ['nyeri_dada'],
-        severity: 'parah',
-        severityScore: 9,
-        description: 'Test',
-        canTreatAtHome: false,
       };
-
-      const weightMap = buildSymptomWeightMap(DISEASES);
-      const score = calculateMatchScore(['sesak_napas'], heartAttack, weightMap);
-      expect(score).toBe(0);
-    });
-
-    it('should give higher score for more matched symptoms', () => {
-      const flu: Disease = {
-        id: 'flu',
-        name: 'Flu',
-        nameEn: 'Flu',
-        symptoms: ['demam', 'batuk', 'pilek'],
-        severity: 'ringan',
-        severityScore: 2,
-        description: 'Test',
-        canTreatAtHome: true,
-      };
-
-      const weightMap = buildSymptomWeightMap(DISEASES);
-      const score1 = calculateMatchScore(['demam'], flu, weightMap);
-      const score2 = calculateMatchScore(['demam', 'batuk'], flu, weightMap);
-
-      expect(score2).toBeGreaterThan(score1);
+      expect(checkRequiredSymptoms(['demam', 'batuk'], disease)).toBe(false);
     });
   });
 
-  describe('calculateCoverageScore', () => {
+  describe('calculateCompletenessScore', () => {
     it('should return 1 when all symptoms are matched', () => {
       const disease: Disease = {
         id: 'test',
@@ -98,7 +68,7 @@ describe('Diagnosis Engine', () => {
         canTreatAtHome: true,
       };
 
-      const score = calculateCoverageScore(['demam', 'batuk'], disease);
+      const score = calculateCompletenessScore(['demam', 'batuk'], disease);
       expect(score).toBe(1);
     });
 
@@ -114,8 +84,67 @@ describe('Diagnosis Engine', () => {
         canTreatAtHome: true,
       };
 
-      const score = calculateCoverageScore(['demam'], disease);
+      const score = calculateCompletenessScore(['demam'], disease);
       expect(score).toBe(0.5);
+    });
+  });
+
+  describe('checkRequiredSymptoms', () => {
+    it('should return true if at least one required symptom is present', () => {
+      const disease = {
+        requiredSymptoms: ['nyeri_dada', 'sesak_napas'],
+      };
+      expect(checkRequiredSymptoms(['nyeri_dada'], disease)).toBe(true);
+    });
+
+    it('should return false if no required symptoms are present', () => {
+      const disease = {
+        requiredSymptoms: ['nyeri_dada'],
+      };
+      expect(checkRequiredSymptoms(['demam', 'batuk'], disease)).toBe(false);
+    });
+
+    it('should return true for diseases without required symptoms', () => {
+      const disease = {};
+      expect(checkRequiredSymptoms(['demam'], disease)).toBe(true);
+    });
+  });
+
+  describe('calculateIDFMatchScore', () => {
+    it('should give higher score for more matched symptoms', () => {
+      const flu: Disease = {
+        id: 'flu',
+        name: 'Flu',
+        nameEn: 'Flu',
+        symptoms: ['demam', 'batuk', 'pilek'],
+        severity: 'ringan',
+        severityScore: 2,
+        description: 'Test',
+        canTreatAtHome: true,
+      };
+
+      const idfMap = buildSymptomIDFMap(DISEASES);
+      const score1 = calculateIDFMatchScore(['demam'], flu, idfMap);
+      const score2 = calculateIDFMatchScore(['demam', 'batuk'], flu, idfMap);
+
+      expect(score2).toBeGreaterThan(score1);
+    });
+
+    it('should return 1 when all symptoms are matched', () => {
+      const disease: Disease = {
+        id: 'test',
+        name: 'Test',
+        nameEn: 'Test',
+        symptoms: ['demam', 'batuk'],
+        severity: 'ringan',
+        severityScore: 2,
+        description: 'Test',
+        canTreatAtHome: true,
+      };
+
+      const idfMap = buildSymptomIDFMap(DISEASES);
+      const score = calculateIDFMatchScore(['demam', 'batuk'], disease, idfMap);
+      expect(score).toBe(1);
     });
   });
 

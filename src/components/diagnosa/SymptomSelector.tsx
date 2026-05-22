@@ -15,45 +15,45 @@ import {
   Trash2,
 } from 'lucide-react';
 
-// Icon map for each symptom
-const SYMPTOM_ICONS: Record<string, React.ReactNode> = {
+// Expressive emoji map for each symptom
+const SYMPTOM_EMOJIS: Record<string, string> = {
   // Umum
-  demam: <Thermometer className="h-4 w-4 text-red-500" />,
-  lelah: <Sparkles className="h-4 w-4 text-yellow-500" />,
-  sakit_kepala: <Brain className="h-4 w-4 text-purple-500" />,
-  berkeringat: <Sparkles className="h-4 w-4 text-blue-400" />,
-  insomnia: <Brain className="h-4 w-4 text-indigo-500" />,
-  turun_berat_badan: <Sparkles className="h-4 w-4 text-gray-500" />,
-  naik_berat_badan: <Sparkles className="h-4 w-4 text-orange-500" />,
+  demam: '🤒',
+  lelah: '😴‍💨',
+  sakit_kepala: '🤕',
+  berkeringat: '🚦',
+  insomnia: '🌙',
+  turun_berat_badan: '📉',
+  naik_berat_badan: '📈',
   // Pernapasan
-  batuk: <Wind className="h-4 w-4 text-teal-500" />,
-  sakit_tenggorokan: <Wind className="h-4 w-4 text-rose-500" />,
-  sesak_napas: <Wind className="h-4 w-4 text-red-400" />,
-  pilek: <Wind className="h-4 w-4 text-cyan-500" />,
-  bersin: <Wind className="h-4 w-4 text-sky-400" />,
+  batuk: '🦁',
+  sakit_tenggorokan: '🤧',
+  sesak_napas: '😤',
+  pilek: '🤧',
+  bersin: '🤧✨',
   // Pencernaan
-  mual: <Utensils className="h-4 w-4 text-amber-500" />,
-  muntah: <Utensils className="h-4 w-4 text-red-300" />,
-  diare: <Utensils className="h-4 w-4 text-orange-400" />,
-  sakit_perut: <Utensils className="h-4 w-4 text-pink-500" />,
-  tidak_nafsu_makan: <Utensils className="h-4 w-4 text-yellow-600" />,
+  mual: '🤢',
+  muntah: '🤮',
+  diare: '🚽',
+  sakit_perut: '😣',
+  tidak_nafsu_makan: '🍽️✝',
   // Nyeri
-  nyeri_dada: <Bone className="h-4 w-4 text-red-600" />,
-  sakit_punggung: <Bone className="h-4 w-4 text-gray-600" />,
-  nyeri_sendi: <Bone className="h-4 w-4 text-blue-600" />,
-  nyeri_otot: <Bone className="h-4 w-4 text-green-600" />,
+  nyeri_dada: '💔',
+  sakit_punggung: '🗿',
+  nyeri_sendi: '🦵',
+  nyeri_otot: '💪😣',
   // Neurologis
-  pusing: <Brain className="h-4 w-4 text-violet-500" />,
-  pandangan_kabur: <Brain className="h-4 w-4 text-slate-500" />,
-  gemetar: <Brain className="h-4 w-4 text-cyan-400" />,
-  cemas: <Brain className="h-4 w-4 text-orange-400" />,
-  depresi: <Brain className="h-4 w-4 text-gray-500" />,
+  pusing: '💫',
+  pandangan_kabur: '👁️‍🗨',
+  gemetar: '〰',
+  cemas: '😰',
+  depresi: '😔',
   // Lainnya
-  bengkak: <Sparkles className="h-4 w-4 text-blue-300" />,
-  ruam: <Sparkles className="h-4 w-4 text-pink-400" />,
+  bengkak: '🥧',
+  ruam: '🔴',
 };
 
-// Category icons
+// Category icons (still using lucide for category headers)
 const CATEGORY_ICONS: Record<SymptomCategory, React.ReactNode> = {
   umum: <Thermometer className="h-5 w-5 text-red-500" />,
   pernapasan: <Wind className="h-5 w-5 text-teal-500" />,
@@ -143,7 +143,7 @@ export function SymptomSelector({ selectedSymptoms, onToggleSymptom, onClearAll 
                     whileHover={{ scale: 1.02 }}
                     className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm"
                   >
-                    {SYMPTOM_ICONS[symptomId] || <Sparkles className="h-4 w-4" />}
+                    <span className="text-base">{SYMPTOM_EMOJIS[symptomId] || '🔍'}</span>
                     {getSymptomLabel(symptomId)}
                     <button
                       onClick={() => onToggleSymptom(symptomId)}
@@ -196,22 +196,35 @@ export function SymptomSelector({ selectedSymptoms, onToggleSymptom, onClearAll 
                     transition={{ delay: index * 0.03 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => onToggleSymptom(symptom.id)}
-                    className={`inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                    className={`relative inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${
                       isSelected
                         ? 'border-blue-600 bg-blue-600 text-white shadow-sm'
                         : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50'
                     }`}
                   >
-                    {isSelected ? (
-                      <span className="flex h-4 w-4 items-center justify-center">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    {/* Checkmark badge when selected */}
+                    {isSelected && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-white"
+                      >
+                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
-                      </span>
-                    ) : (
-                      SYMPTOM_ICONS[symptom.id]
+                      </motion.span>
                     )}
-                    {symptom.label}
+                    {/* Emoji with hover bounce and selected scale */}
+                    <motion.span
+                      className="text-xl"
+                      animate={isSelected ? { scale: 1.2 } : { scale: 1 }}
+                      transition={{ duration: 0.15 }}
+                      whileHover={{ y: [0, -3, 0] }}
+                      style={{ display: 'inline-block' }}
+                    >
+                      {SYMPTOM_EMOJIS[symptom.id] || '🔍'}
+                    </motion.span>
+                    <span>{symptom.label}</span>
                   </motion.button>
                 );
               })}
