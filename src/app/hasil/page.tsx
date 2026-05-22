@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -11,12 +11,10 @@ import { TreatmentSteps } from '@/components/hasil/TreatmentSteps';
 import { PDFExportButton } from '@/components/hasil/PDFExportButton';
 import { Disclaimer } from '@/components/hasil/Disclaimer';
 import { getTreatmentByDiseaseId } from '@/lib/data/treatments';
-import { getSymptomById } from '@/lib/data/symptoms';
 import type { DiagnosisOutput, DiagnosisInput } from '@/types';
 
 export default function HasilPage() {
   const router = useRouter();
-  const contentRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [diagnosisOutput, setDiagnosisOutput] = useState<DiagnosisOutput | null>(null);
   const [diagnosisInput, setDiagnosisInput] = useState<DiagnosisInput | null>(null);
@@ -78,26 +76,8 @@ export default function HasilPage() {
           </p>
         </div>
 
-        {/* Gejala yang Dipilih */}
-        <div className="mb-6 rounded-xl bg-white p-4 shadow-sm">
-          <h3 className="mb-3 text-sm font-medium text-gray-700">Gejala yang Anda Rasakan:</h3>
-          <div className="flex flex-wrap gap-2">
-            {diagnosisInput.selectedSymptoms.map((symptomId) => {
-              const symptom = getSymptomById(symptomId);
-              return (
-                <span
-                  key={symptomId}
-                  className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
-                >
-                  {symptom?.label || symptomId}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Content for PDF */}
-        <div ref={contentRef} className="space-y-6">
+        {/* Content for screen display */}
+        <div className="space-y-6">
           {/* Hospital Alert */}
           {mustGoToHospital && (
             <HospitalAlert diseaseName={primary.disease.name} />
@@ -119,11 +99,10 @@ export default function HasilPage() {
         </div>
 
         {/* Actions */}
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 no-print">
           <PDFExportButton
             diagnosisOutput={diagnosisOutput}
             diagnosisInput={diagnosisInput}
-            contentRef={contentRef}
           />
           <Link href="/diagnosa">
             <button className="rounded-lg border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">

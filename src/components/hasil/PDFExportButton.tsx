@@ -1,56 +1,54 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Download, Printer, FileText } from 'lucide-react';
+import { useEffect } from 'react';
+import { Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { generatePDF } from '@/lib/utils/pdf-generator';
+import { DiagnosisPrintContent } from './DiagnosisPrintContent';
 import type { DiagnosisOutput, DiagnosisInput } from '@/types';
 
 interface PDFExportButtonProps {
   diagnosisOutput: DiagnosisOutput;
   diagnosisInput: DiagnosisInput;
-  contentRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export function PDFExportButton({ diagnosisOutput, diagnosisInput, contentRef }: PDFExportButtonProps) {
-  const handleDownloadPDF = async () => {
-    try {
-      const element = contentRef?.current || null;
-      await generatePDF(diagnosisOutput, diagnosisInput, element);
-    } catch (error) {
-      console.error('PDF generation failed:', error);
-      alert('Gagal membuat PDF. Silakan coba lagi.');
-    }
-  };
+export function PDFExportButton({ diagnosisOutput, diagnosisInput }: PDFExportButtonProps) {
+  const handleSaveAsPDF = () => {
+    // Add mode-print class to body to show print content
+    document.body.classList.add('mode-print');
 
-  const handlePrint = () => {
+    // Call print dialog
     window.print();
+
+    // Remove mode-print class after print dialog closes
+    // Use setTimeout as a fallback since we can't detect when dialog closes
+    setTimeout(() => {
+      document.body.classList.remove('mode-print');
+    }, 100);
   };
 
   return (
-    <div className="flex flex-wrap gap-3">
-      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+    <>
+      {/* Print content (hidden in normal view, shown when mode-print is active) */}
+      <DiagnosisPrintContent
+        diagnosisOutput={diagnosisOutput}
+        diagnosisInput={diagnosisInput}
+      />
+
+      {/* Button */}
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           variant="outline"
-          onClick={handleDownloadPDF}
+          onClick={handleSaveAsPDF}
           className="flex items-center gap-2 rounded-lg border-2 border-blue-200 bg-blue-50 text-blue-700 transition-all hover:border-blue-400 hover:bg-blue-100"
         >
-          <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">Download PDF</span>
-          <span className="sm:hidden">PDF</span>
-        </Button>
-      </motion.div>
-
-      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-        <Button
-          variant="outline"
-          onClick={handlePrint}
-          className="flex items-center gap-2 rounded-lg border-2 border-gray-200 text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-50"
-        >
           <Printer className="h-4 w-4" />
-          <span className="hidden sm:inline">Cetak</span>
+          <span>Simpan sebagai PDF</span>
         </Button>
-      </motion.div>
-    </div>
+
+        <p className="w-full text-xs text-gray-500 sm:w-auto">
+          Pilih &quot;Save as PDF&quot; di dialog print untuk menyimpan file
+        </p>
+      </div>
+    </>
   );
 }

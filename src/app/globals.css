@@ -101,3 +101,257 @@ body {
 .animate-accordion-up {
   animation: accordion-up 0.2s ease-out;
 }
+
+/* ===========================
+   PRINT STYLES
+   =========================== */
+
+/* Hide everything except print content when printing */
+@media print {
+  /* Reset for print */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  /* Hide these elements when printing */
+  body:not(.mode-print) {
+    display: none;
+  }
+
+  .mode-print nav,
+  .mode-print header,
+  .mode-print footer,
+  .mode-print .no-print,
+  .mode-print a[href]:not([href="#"])::after,
+  .mode-print button,
+  .mode-print .actions-section,
+  .mode-print .back-button {
+    display: none !important;
+  }
+
+  /* Show only the print content wrapper */
+  .mode-print #hasil-diagnosa-print {
+    display: block !important;
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 20px;
+  }
+
+  /* Watermark CEKAKU diagonal */
+  .mode-print #hasil-diagnosa-print::before {
+    content: "CEKAKU";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 120px;
+    font-weight: 900;
+    color: rgba(0, 0, 0, 0.06);
+    z-index: -1;
+    pointer-events: none;
+    letter-spacing: 10px;
+  }
+
+  /* Header styling */
+  .mode-print .print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e40af !important;
+    color: white !important;
+    padding: 15px 20px;
+    margin: -20px -20px 20px -20px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .mode-print .print-header h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .mode-print .print-date {
+    font-size: 10pt;
+    text-align: right;
+  }
+
+  /* Disease name styling */
+  .mode-print .disease-name {
+    font-size: 24pt;
+    font-weight: 800;
+    margin-bottom: 5px;
+  }
+
+  .mode-print .disease-card {
+    border-left: 4px solid #1e40af;
+    padding-left: 15px;
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+  }
+
+  /* Severity badge */
+  .mode-print .severity-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 10pt;
+    font-weight: 700;
+    color: white !important;
+    margin-bottom: 10px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .mode-print .severity-badge.ringan {
+    background: #16a34a !important;
+  }
+
+  .mode-print .severity-badge.sedang {
+    background: #ca8a04 !important;
+  }
+
+  .mode-print .severity-badge.parah {
+    background: #dc2626 !important;
+  }
+
+  /* Confidence bar using CSS */
+  .mode-print .confidence-section {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .mode-print .confidence-bar-container {
+    width: 200px;
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 5px;
+  }
+
+  .mode-print .confidence-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #1e40af);
+    border-radius: 6px;
+  }
+
+  /* Matched symptoms - 2 column layout if > 4 */
+  .mode-print .matched-symptoms {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+  }
+
+  .mode-print .symptoms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px 15px;
+  }
+
+  .mode-print .symptom-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10pt;
+  }
+
+  .mode-print .symptom-check {
+    color: #16a34a;
+    font-weight: bold;
+  }
+
+  /* Treatment steps */
+  .mode-print .treatment-steps {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+  }
+
+  .mode-print .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .mode-print .step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    background: #1e40af;
+    color: white;
+    border-radius: 50%;
+    font-size: 11pt;
+    font-weight: 700;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .mode-print .step-content {
+    flex: 1;
+  }
+
+  .mode-print .step-title {
+    font-weight: 700;
+    font-size: 11pt;
+    margin-bottom: 2px;
+  }
+
+  .mode-print .step-desc {
+    font-size: 10pt;
+    color: #4b5563;
+  }
+
+  /* Footer */
+  .mode-print .print-footer {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 2px solid #1e40af;
+    font-size: 9pt;
+    color: #6b7280;
+    text-align: center;
+  }
+
+  /* Alternative diseases */
+  .mode-print .alternatives-section {
+    margin-top: 15px;
+    page-break-inside: avoid;
+  }
+
+  .mode-print .alternative-item {
+    margin-bottom: 8px;
+    font-size: 10pt;
+  }
+
+  /* Disclaimer */
+  .mode-print .disclaimer-section {
+    margin-top: 15px;
+    padding: 10px;
+    background: #fef3c7;
+    border-left: 3px solid #f59e0b;
+    font-size: 9pt;
+    page-break-inside: avoid;
+  }
+}
+
+/* When mode-print is active on body, show print content */
+body.mode-print #hasil-diagnosa-print {
+  display: block !important;
+}
+
+/* Hide print content in normal view */
+#hasil-diagnosa-print {
+  display: none;
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { AlertCircle, Phone, MapPin, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ShieldCheck } from 'lucide-react';
 
 interface HospitalAlertProps {
   diseaseName: string;
@@ -56,46 +56,11 @@ export function HospitalAlert({ diseaseName }: HospitalAlertProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="mb-4 text-sm leading-relaxed text-red-800"
+              className="text-sm leading-relaxed text-red-800"
             >
               Hasil diagnosa menunjukkan kemungkinan <strong className="text-red-900">{diseaseName}</strong>.
-              Kondisi ini memerlukan penanganan medis segera. Jangan tunda untuk pergi ke
-              IGD atau hubungi layanan kesehatan terdekat.
+              Kondisi ini memerlukan penanganan medis segera. Segera pergi ke IGD rumah sakit terdekat untuk pemeriksaan lebih lanjut.
             </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-wrap gap-3"
-            >
-              <motion.a
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                href="tel:119"
-                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-shadow hover:shadow-xl"
-              >
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-                >
-                  <Phone className="h-4 w-4" />
-                </motion.div>
-                Hubungi 119
-              </motion.a>
-
-              <motion.a
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                href="https://yankes.kemkes.go.id/main/detail/KontakIGD"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-red-300 bg-white px-5 py-3 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
-              >
-                <MapPin className="h-4 w-4" />
-                Cari IGD Terdekat
-              </motion.a>
-            </motion.div>
           </div>
         </div>
 
